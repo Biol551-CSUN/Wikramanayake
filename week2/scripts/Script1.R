@@ -16,6 +16,6 @@ Weightdata<- read_csv(here("Week2","data", "weightdata.csv"))
 ###Data Analysis########
 
 head(Weightdata) #Viewing the data 
-tail(Weightdata) #iwin the last few lines
+tail(Weightdata) 
 view(Weightdata)
   
