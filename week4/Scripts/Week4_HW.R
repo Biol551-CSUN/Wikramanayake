@@ -41,7 +41,9 @@ penguins %>%
        colour = "Island")+ #Adding relevant text
   theme_classic()+ #adding bw theme to show important gridlines
   theme(axis.title= element_text(size = 15), 
-        axis.text = element_text(size = 12))
+        axis.text = element_text(size = 12))+
+  ggsave(here("week4","Outputs","Penguin_W4.png"), 
+         width = 7, height = 5)
   
 
 
