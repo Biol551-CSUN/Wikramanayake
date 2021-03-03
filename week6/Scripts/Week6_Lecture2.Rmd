@@ -1,0 +1,58 @@
+---
+title: 'Week6_Lecture2: R Markdown'
+author: "Shanelle A. Wikramanayake"
+date: "3/3/2021"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: journal
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      fig.path = "../Outputs/")
+```
+
+# Introduction  
+Today we are using the **Palmer penguins** dataset to manipulate figures in RMarkdown.  
+
+# Load Libraries
+
+```{r}
+library(palmerpenguins)
+library(tidyverse)
+library(here)
+library(kableExtra)
+```
+
+# Make a plot
+
+```{r PenFig, fig.align='center', fig.cap="This is a figure of penguin flippers for different species on different islands"}
+penguinfig <- penguins %>% 
+  ggplot(aes(x = species, y = flipper_length_mm, colour = island))+
+  geom_boxplot()
+
+penguinfig
+```
+
+# Make a table  
+Type a table by hand
+
+| Time  | Session | Topic    |
+|:------|:-------:|---------:|
+| _left_ | _center_| _right_ |
+| 01:00  | 1       | Anatomy |
+| 01:50  |         | *Break* |
+| 02:00  | 2       | Tables  |
+| 02:45  |         | *Break* |
+```{r}
+penguins %>% 
+  group_by(species) %>% 
+  summarise(billmean = mean(bill_length_mm, na.rm = TRUE)) %>% 
+  kbl() %>% 
+  kable_classic()
+```
+

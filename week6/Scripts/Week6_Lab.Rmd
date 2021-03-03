@@ -1,0 +1,45 @@
+---
+title: "Week6_Lab: R Markdown" #YAMLS filled out
+author: "Shanelle A. Wikramanayake"
+date: "3/1/2021"
+output: 
+  html_document:
+    toc: TRUE #create table of contents
+    toc_float: TRUE #To the left
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction  
+Today we are going to work with data to learn _RMarkdown_ 
+
+## Load Libraries
+```{r, warning= FALSE, message=FALSE}
+
+library(tidyverse)
+library(palmerpenguins)
+library(here)
+```
+## Inspect the data 
+```{r, echo=FALSE}
+glimpse(penguins)
+```
+
+## Make a plot  
+This is a plot of peguin bill length by penguin bill depth, both in mm.  
+**Species** are in colours:  
+- Gentoo : Blue   
+- Adelie : Red  
+- Chinstrap : Green  
+```{r,warning= FALSE, message= FALSE}
+penguins %>% 
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm, colour = species))+
+           geom_point()+
+           geom_smooth(method = "lm")+
+           labs(x = "Bill length (mm)", 
+                y = "Bill depth (mm)")
+
+```
+

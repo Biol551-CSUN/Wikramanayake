@@ -1,0 +1,74 @@
+---
+title: "Week6 Lab2: Palmer Penguins Data "
+author: "Shanelle A. Wikramanayake"
+date: "3/3/2021"
+output:
+  prettydoc::html_pretty:
+    theme: hpstr
+    toc: TRUE
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE, 
+                      warning = FALSE, 
+                      fig.path = "../Outputs/")
+```
+
+# Introduction
+For lab this week, we will be using the Palmer Penguins dataset to learn how to work in RMarkdown.
+
+# Load Libraries
+```{r}
+library(palmerpenguins)
+library(tidyverse)
+library(here)
+library(kableExtra)
+```
+
+# The Data
+```{r}
+
+penguins %>% 
+  group_by(species) %>% 
+  summarise(BillLength_mean= mean(bill_length_mm, na.rm = TRUE), 
+            BillDepth_mean = mean(bill_depth_mm, na.rm = TRUE), 
+            FlipperLength_mean = mean(flipper_length_mm, na.rm = TRUE), 
+            BodyMass_mean = mean(body_mass_g, na.rm = TRUE)) %>% 
+  kbl() %>% 
+  kable_classic()
+```
+```{r}
+bar <- penguins %>% 
+  ggplot(aes(x = species,
+             fill= species))+
+  geom_bar()+
+  facet_wrap(~island)+
+  scale_fill_viridis_d()+
+  labs(title = "Number of Penguins on Each Island", 
+       x = "Species", 
+       y = "Number of Penguins")
+bar
+```
+
+# Visualizing Data  
+First we calculates _bill ratio_ for each individual by dividing bill length (mm) by bill depth (mm). We then plotted body mass by bill ration for each species on each island to see if there is a relationship.
+
+```{r, fig.height=5, fig.width=15}
+Penfig <- penguins %>% 
+  mutate(BillRatio = (bill_length_mm/bill_depth_mm)) %>% 
+  ggplot(aes(x = body_mass_g, 
+             y = BillRatio, 
+             colour= species))+
+  geom_point()+
+  geom_line()+
+  scale_colour_viridis_d()+
+  facet_wrap(~island)+
+  labs(title = "Bill Ratio of Penguins by Body Mass", 
+       x = "Body Mass (g)", 
+       y = "Bill Ratio", 
+       colour = "Species")+
+  
+Penfig
+```
+
