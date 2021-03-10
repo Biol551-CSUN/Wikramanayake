@@ -1,0 +1,169 @@
+---
+title: "Week7_Lab1:Map making"
+author: "Shanelle A. Wikramanayake"
+date: "3/8/2021"
+output:
+  html_document:
+    toc: TRUE #create table of contents
+    toc_float: TRUE #To the left
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.path = "../Outputs/")
+```
+
+# Introduction  
+Today we are going to work with data to learn _map making in R_ 
+
+# Load Libraries
+```{r, warning= FALSE, message=FALSE}
+
+library(tidyverse)
+library(here)
+library(maps)
+library(mapdata)
+library(mapproj)
+library(kableExtra)
+library(tidytuesdayR)
+```
+
+# Load and inspect data 
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2021-01-26')
+plastics <- tuesdata$plastics
+view(plastics)
+
+plastics_data <- plastics %>% 
+  select(country,pvc, hdpe, ldpe, pet, pp) %>% 
+  group_by(country) %>% 
+  summarise(mean_pvc = mean(pvc), 
+            mean_hdpe = mean(hdpe),
+            mean_ldpe = mean(ldpe), 
+            mean_pet = mean(pet), 
+            mean_pp = mean(pp)) 
+plastics_data %>% 
+  kbl()
+
+
+```
+
+# Plastic pollution across the globe
+Lets visualize plastic pollution across the globe
+First, lets look at the distribution of mean PVC plastics around the world.
+```{r}
+world <- map_data("world") #creates a df of polygons of the world
+
+plastics_world <- plastics %>% 
+  select(country,pvc, hdpe, ldpe, pet, pp) %>% 
+  group_by(country) %>% 
+  summarise(mean_pvc = mean(pvc), 
+            mean_hdpe = mean(hdpe),
+            mean_ldpe = mean(ldpe), 
+            mean_pet = mean(pet), 
+            mean_pp = mean(pp)) %>% 
+  rename(region = country)
+view(plastics_world)
+
+plastics_world <- plastics_world %>% 
+  inner_join(world, 
+             by = "region")
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group), 
+               colour = "black")+
+  geom_polygon(data = plastics_world, 
+               aes(x = long, 
+                   y = lat,
+                   group = group,
+                   fill = mean_pvc))+
+  scale_fill_viridis_c()+
+  theme_minimal()+
+  theme(panel.background = element_rect(fill = "light blue"))+
+  coord_map(projection = "mercator", 
+            xlim = c(-180, 180))+
+  labs(title = "Mean PVC Plastic Count for Different Countries", 
+       x = "Longitude", 
+       y = "Latitude", 
+       fill = "Mean PVC count")
+  
+ 
+
+```
+Now, lets look at the distribution of mean **High density polyethylene** (HDPE) plastics around the world.
+```{r}
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group), 
+               colour = "black")+
+  geom_polygon(data = plastics_world, 
+               aes(x = long, 
+                   y = lat,
+                   group = group,
+                   fill = mean_hdpe))+
+  scale_fill_viridis_c()+
+  theme_minimal()+
+  theme(panel.background = element_rect(fill = "light blue"))+
+  coord_map(projection = "mercator", 
+            xlim = c(-180, 180))+
+  labs(title = "Mean HDPE Plastic Count for Different Countries", 
+       x = "Longitude", 
+       y = "Latitude", 
+       fill = "Mean HDPE count")
+  
+```
+
+Now, lets look at the distribution of mean **Low density polyethylene** (LDPE) plastics around the world.
+```{r}
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group), 
+               colour = "black")+
+  geom_polygon(data = plastics_world, 
+               aes(x = long, 
+                   y = lat,
+                   group = group,
+                   fill = mean_ldpe))+
+  scale_fill_viridis_c()+
+  theme_minimal()+
+  theme(panel.background = element_rect(fill = "light blue"))+
+  coord_map(projection = "mercator", 
+            xlim = c(-180, 180))+
+  labs(title = "Mean LDPE Plastic Count for Different Countries", 
+       x = "Longitude", 
+       y = "Latitude", 
+       fill = "Mean LDPE count")
+```
+ 
+Now, lets look at the distribution of mean **Polyester** (PET) plastics around the world.
+```{r}
+ggplot()+
+  geom_polygon(data = world, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group), 
+               colour = "black")+
+  geom_polygon(data = plastics_world, 
+               aes(x = long, 
+                   y = lat,
+                   group = group,
+                   fill = mean_pet))+
+  scale_fill_viridis_c()+
+  theme_minimal()+
+  theme(panel.background = element_rect(fill = "light blue"))+
+  coord_map(projection = "mercator", 
+            xlim = c(-180, 180))+
+  labs(title = "Mean PET Plastic Count for Different Countries", 
+       x = "Longitude", 
+       y = "Latitude", 
+       fill = "Mean PET count")
+
+```
+
+
