@@ -1,0 +1,138 @@
+---
+title: "Bad Plot Good Plot"
+author: "Shanelle A. Wikramanayake"
+date: "3/18/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE, 
+                      warning = FALSE, 
+                      fig.path = "../Outputs/")
+```
+
+We are visualizing the data as good and bad plots using principals of data visualization.
+
+# Load Libraries
+```{r}
+library(tidyverse)
+library(here)
+library(tidytuesdayR)
+library(ggpubr)
+library(jpeg)
+library(extrafont)
+library(RColorBrewer)
+
+```
+
+# The Data
+We are using data from a prior Tidy Tuesdat (Week 4, 2020) that used "spotifyR" to collect data from Spotify.
+```{r}
+
+###Load Data from old TidyTuesday Challenge###
+
+tuesdata <- tidytuesdayR::tt_load('2020-01-21') 
+spotify_songs <- tuesdata$spotify_songs
+
+```
+
+# Bad Plot 
+For the badplot we looked at the popularity of EVERY SINGLE SONG in the dataset. Popularity is on a scale of 1-100. The colours of the bars represent the genre of the song. The most popular song was Dance Monkey by Tones and i, so I made the track cover the plot background to recognize this feat. 
+
+## Why is it a bad plot?
+ We think it's a bad plot for several reasons. The x axis label is certainly not appropriate for publication. There are few too many categories, which are song names, are overlapping and too small to be legible and also magenta. The bars are representing popularity are too thin and only take up the first 4th of the page. The Tones and i plot background is very distracting, as well as the very overt declaration that "Dance monke" was the most popular. The y axis, which represents popularity is on a scale of 0-1000, when it should be from 1-100. The plot title is also not very informative. The font used in for the text is Comic Sans and is not used very often in publications. The colour scheme is not colour blind friendly, nauseating, and over all just egregious. I apologize profusely for this plot.
+
+```{r, fig.height=5, fig.width=15}
+font_import()
+loadfonts(device = "win")
+
+pops <- spotify_songs %>% 
+  select(track_name, track_artist, track_popularity, 
+         playlist_genre, danceability, loudness, speechiness) %>% 
+  filter(track_popularity == 100)
+view(pops)
+#Apparently it's dance monkey by Tones and I (why?)
+
+img <- readJPEG(here("week7", "Data", "Dance_Monke.jpg")) #getting cover image of no1 song
+
+Spot_pops <- spotify_songs %>% 
+  select(track_name, track_artist, track_popularity, 
+         playlist_genre, danceability, loudness, speechiness) %>% 
+  ggplot(mapping = aes(x = track_name, 
+                       y= track_popularity))+
+  background_image(img)+ #adding the most popular cover as the plot background because its important that everyone knows
+  geom_col(aes(fill= playlist_genre))+
+  scale_fill_viridis_d(labels = c("EDM", "Latin", "Pop", "R&B", "Rap", "Rock"))+ #setting legend labels
+  annotate("text", x = 7000, y = 650, 
+           label = "No. 1 is Dance Monke", 
+           size = 15, 
+           colour ="green")+
+  labs(title = "The boppiest bops", 
+       x = "These r song names ^", 
+       y = "Popularity", 
+       caption = "What is data")+
+  theme_dark()+
+  theme(text = element_text(family = "Comic Sans MS", #setting font as comic sans because why not
+                            face = "bold"), 
+        plot.title = element_text(colour = "light green", #title in light green
+                                  size = 18), 
+        plot.background = element_rect(fill = "dark blue"), #background is dark blue
+        legend.background = element_rect(fill = "blue"), #Distinguish the legend in blue
+        legend.key = element_rect("orange"), #axis text in orange
+        legend.text = element_text(colour = "magenta", #Legend text in magenta 
+                                   size = 13),
+        legend.title = element_text(colour = "purple", #legend title in purple
+                                    size = 15),
+        axis.text = element_text(color = "purple", #axis text in purple
+                                 size = 10), 
+        axis.text.y = element_text(angle = -90, #Make y axis text horizontal so it's "easier" to read
+                                   size = 30),
+        axis.title = element_text(colour = "orange", #Axis titles in orange
+                                  size = 15))+
+  ggsave(here("week7", "Outputs", "Spotify_Pop_bad.png"))
+        
+Spot_pops    
+```
+# Good Plot 
+This time we looked at the popularity of each genre instead of every song, since I think that this is more informative and possibly useful. Again, popularity is on a scale of 1-100. We used boxplots to easily visualize the main statistics; The maximum and minimum, the lower and upper quartiles, and the medium. We also overlaid them with violin plots to see teh distribution of the data. 
+## Why is it a better plot?
+ The x axis this time is very simple this time and the y axis is on a scale of 0-100, which is what it should be. The title, subtitle and captions are informative. i specifically got rid of the legend that R automatically creates because it would be unnecessary. There is not track cover to distract from the actual data. 
+```{r}
+Spot_pops_good <- spotify_songs %>% 
+  select(track_name, track_artist, track_popularity, 
+         playlist_genre, danceability, loudness, speechiness) %>% 
+  
+  ggplot(aes(x = playlist_genre, #plotting popularity of each genra
+             y = track_popularity))+
+  geom_violin(aes(fill = playlist_genre,
+                  alpha = 0.95,
+                  colour = playlist_genre))+
+  scale_colour_brewer(palette = "Set2")+
+  scale_fill_brewer(palette = "Set2")+
+  geom_boxplot(aes(),
+               width = 0.3,
+               size = 1, 
+               fill = NA,
+               outlier.colour = "black")+
+  labs(title = 'Popularity of tracks by genre',
+       subtitle = "Distribution of popularity of songs from playlists on Spotify by genre",
+       x = "Genre",
+       y = "Track Popularity",
+       caption = "Source: spotifyr (Tidy Tuesday/Week 4/2020)")+
+  scale_x_discrete(limit = c("edm", "latin", "pop", "r&b", "rap", "rock"), 
+                   labels = c("EDM", "Latin", "Pop", "R&B", "Rap", "Rock"))+
+  theme_bw()+
+  theme(axis.text = element_text(size = 13), 
+        axis.title = element_text(size = 15),
+        plot.subtitle = element_text(size = 17),
+        plot.title = element_text(size = 20, 
+                                  face= "bold"),
+         
+        legend.position = "none")+
+  ggsave(here("week7", "Outputs", "Spotify_Pop_good.png"))
+
+Spot_pops_good
+```
+ 
+ 
