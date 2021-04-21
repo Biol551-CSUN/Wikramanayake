@@ -32,7 +32,9 @@ itdata_cover2 <- intertidal %>%
   ggplot()+
   geom_mosaic(aes(x = product(Tide_Height), fill= Organism, weight = Percent_cover), colour = "grey", size = 1)+
   scale_fill_manual(values = pal)+
-  labs(x = "Tide Height")
+  labs(x = "Tide Height")+
+  theme(axis.title = element_text(size = 17), 
+        axis.text = element_text(size = 15))
 
 itdata_cover2
   
