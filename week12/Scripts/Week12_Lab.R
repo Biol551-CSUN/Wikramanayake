@@ -34,7 +34,8 @@ itdata_cover2 <- intertidal %>%
   scale_fill_manual(values = pal)+
   labs(x = "Tide Height")+
   theme(axis.title = element_text(size = 17), 
-        axis.text = element_text(size = 15))
+        axis.text = element_text(size = 15))+
+  ggsave(here("week12", "Outputs", "Percent_cover.png"))
 
 itdata_cover2
   
